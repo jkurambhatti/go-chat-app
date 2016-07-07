@@ -1,3 +1,5 @@
+// in this project we will build a chat application which will allow multiple users to communicate in real-time
+
 package main
 
 import (
@@ -5,20 +7,29 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"path/filepath"
+	"sync"
 )
+
+type templateHandler struct {
+	once     sync.Once
+	fileName string
+	tmpl     *template.Template
+}
 
 type User struct {
 	Name string `json:"name"`
 }
 
-func index(w http.ResponseWriter, req *http.Request) {
-	tmp, err := template.ParseFiles("index.html")
-	if err != nil {
-		fmt.Errorf("template.ParseFiles %s \n", err)
-	}
+func (t *templateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+
+	t.once.Do(func() {
+		t.tmpl = template.Must(template.ParseFiles(filepath.Join("templates", t.fileName)))
+	})
+
 	u := User{Name: "Jayesh"}
-	if err = tmp.Execute(w, u); err != nil {
-		log.Println("tmp.Execute: ", err)
+	if err := t.tmpl.Execute(w, u); err != nil {
+		log.Println("t.tmpl.Execute: ", err)
 		return
 	}
 
@@ -26,8 +37,9 @@ func index(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-
-	http.HandleFunc("/", index)
+	var t templateHandler
+	t.fileName = "index.html"
+	http.Handle("/", &t)
 	fmt.Println("Listening on Port : 3000 ")
 	if err := http.ListenAndServe(":3000", nil); err != nil {
 		log.Fatalf("ListenAndServe : %s ", err)
