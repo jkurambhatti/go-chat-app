@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- font awesome from BootstrapCDN -->
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="/public/app.css" rel="stylesheet">
+    </head>
+    <body class="home">
+        <div class="container">
+            <div class="login-page clearfix">
+              <div class="logged-in-box auth0-box logged-in">
+                <h1 id="logo" style="display: inline-block"><img src="/public/auth0_logo_final_blue_RGB.png" style="display: inline-block"/></h1>
+                <img class="avatar" src="{{.picture}}" style="
+    height: 50px;
+    margin-top: 20px;
+    float: right;
+"/>
+                <h2>Welcome {{.nickname}}</h2>
+                <div id="msgbox">
+                <input type="text" name="text" id="sendtxt">
+                <input type="button" value="send" id="btn">
+              </div>
+                <div id="chatarea" style="
+    border: 1px solid #cccccc;
+    margin-top: 30px;
+">
+                  </div>
+              </div>
+            </div>
+        </div>
+
+<!-- <script src="/public/chat.js"></script> -->
+
+<script type="text/javascript">
+        	if (window["WebSocket"])
+        		console.log("WebSocket supported");
+        	else
+        		console.log("WebSocket not supported");
+
+        	var ws = new WebSocket("ws://192.168.2.8:3000/ws"); // yes
+
+        	ws.onmessage = function(e){
+
+        	 writeOnScreen(e); 	// prints incoming messages on the screen
+
+        	}
+
+        	ws.onerror = function (e) {
+                    console.log("ERR: " + e.data);
+                }
+            // receives the data written in textbox
+            document.getElementById('btn').onclick = function(){
+              	var chattxt =document.getElementById('sendtxt').value;
+               	ws.send(chattxt);
+            }
+
+        	ws.onclose = function(){
+        		alert("connection closed")
+        	}
+
+        	function writeOnScreen(e){
+        	    var ca = document.getElementById('chatarea');
+        	    var msg = document.createElement("p");
+        	    var msgdata = document.createTextNode(e.data);
+        	    msg.appendChild(msgdata);
+              ca.insertBefore(msg, ca.firstChild);
+
+        	    // ca.appendChild(msg);
+        	    document.getElementById('chatarea').value = '';
+        	}
+</script>
+
+</body>
+</html>
