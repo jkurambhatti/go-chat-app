@@ -39,7 +39,7 @@
         	else
         		console.log("WebSocket not supported");
 
-        	var ws = new WebSocket("ws://192.168.2.8:3000/ws"); // yes
+        	var ws = new WebSocket("ws://" + window.location.host + "/ws"); // yes
 
         	ws.onmessage = function(e){
 
