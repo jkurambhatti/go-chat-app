@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 
 	"github.com/auth0/auth0-golang/examples/regular-web-app/routes/callback"
@@ -13,7 +12,6 @@ import (
 	"github.com/jkurambhatti/go-chat-app/routes/user"
 )
 
-var homeTemplate = template.Must(template.ParseFiles("chat.html"))
 
 func StartServer() {
 	r := mux.NewRouter()
@@ -33,6 +31,6 @@ func StartServer() {
 
 func ChatHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	homeTemplate.Execute(w, r.Host)
+	http.ServeFile(w, r, "chat.html")
 	fmt.Println("server.go :", r.Host)
 }
